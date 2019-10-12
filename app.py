@@ -23,9 +23,20 @@ def load_user(user_id):
 def home():
     return redirect(url_for('login'))
 
-@app.route('/register', methods=['POST'])
+@app.route('/register', methods=['POST', 'GET'])
 def register():
     form = RegisterForm()
+
+    if flask.request.method == 'POST':
+        if form.validate_on_submit():
+            user = User(form.username.data, form.password.data)
+            try:
+                users.create(user)
+            except UniqueConstraintError:
+                return render_template(
+                    'login_form.html', title='Register', form=form, form_title="Register", registration_failure=True,
+                )
+
 
     return render_template(
         'login_form.html', title='Register', form=form, form_title="Register"
