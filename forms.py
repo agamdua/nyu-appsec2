@@ -15,3 +15,8 @@ class LoginForm(BaseUserForm):
 
 class RegisterForm(BaseUserForm):
     submit = SubmitField('Register')
+
+
+class SpellCheckForm(FlaskForm):
+    inputarea = StringField('input')
+    submit = SubmitField('spell check')
