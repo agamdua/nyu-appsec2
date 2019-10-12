@@ -1,11 +1,15 @@
 import os
 
-from flask import Flask, render_template
+from flask import Flask, redirect, render_template, url_for
 
 from forms import LoginForm, RegisterForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'testing')
+
+@app.route('/')
+def home():
+    return redirect(url_for('login'))
 
 @app.route('/register')
 def register():
