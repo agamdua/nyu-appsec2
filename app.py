@@ -6,7 +6,7 @@ from flask import Flask, flash, redirect, render_template, request, url_for
 from flask_login import LoginManager
 
 from forms import LoginForm, RegisterForm, SpellCheckForm
-from users import User, users, UserDoesNotExist
+from users import User, users, UserDoesNotExist, UniqueConstraintError
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'testing')
@@ -37,6 +37,12 @@ def register():
                     'login_form.html', title='Register', form=form, form_title="Register", registration_failure=True,
                 )
 
+            return redirect(url_for('login'))
+
+        else:
+            return render_template(
+                'login_form.html', title='Register', form=form, form_title="Register", registration_failure=True,
+            )
 
     return render_template(
         'login_form.html', title='Register', form=form, form_title="Register"
