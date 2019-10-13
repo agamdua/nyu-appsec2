@@ -13,7 +13,7 @@ def test_client():
 
 def test_home_page(test_client):
     response = test_client.get('/')
-    assert response.status_code == 404
+    assert response.status_code == 302
 
 
 def test_login_page(test_client):

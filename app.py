@@ -3,7 +3,7 @@ import os
 import flask
 
 from flask import Flask, flash, redirect, render_template, request, url_for
-from flask_login import LoginManager
+from flask_login import current_user, LoginManager, login_required, login_user
 
 from forms import LoginForm, RegisterForm, SpellCheckForm
 from users import User, users, UserDoesNotExist, UniqueConstraintError
@@ -13,6 +13,7 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'testing')
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+login_manager.login_view = 'login'
 
 
 @login_manager.user_loader
@@ -66,7 +67,10 @@ def login():
                     form_title='Login',
                     login_failure=True,
                 )
-            return redirect(url_for('spell_check', login_success=True))
+            user.create_session()
+            users._save(user)
+            login_user(user)
+            return redirect(url_for('spell_check'))
         else:
             return render_template(
                 'login_form.html',
@@ -82,11 +86,19 @@ def login():
     )
 
 
-@app.route('/spell_check')
+@app.route('/spell_check', methods=['GET', 'POST'])
+@login_required
 def spell_check():
-    # TODO handle post, right now default get is being used
-    login_success = request.args.get('login_success')
     spell_check_form = SpellCheckForm()
+
+    import ipdb; ipdb.set_trace()
+
+    if flask.request.method == 'POST':
+        if form.validate_on_submit():
+            pass
+
+
+    login_success = request.args.get('login_success')
     return render_template(
-        'spell_check.html', title='Spell Check', form=spell_check_form, form_title="Login", login_success=login_success
+        'spell_check.html', title='Spell Check', form=spell_check_form
     )

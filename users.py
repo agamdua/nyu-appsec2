@@ -8,7 +8,8 @@ class Users(dict):
         return self._save(user)
 
     def get_by_id(self, user_id):
-        return self.get(user_id)
+        user = User(user_id, None)
+        return self.get(user)
 
     def get(self, user):
         try:
@@ -39,12 +40,12 @@ class User:
         self.is_active = is_active
         self.is_anonymous = True
 
-    def create_session():
+    def create_session(self):
         self.is_authenticated = True
         self.is_active = True
         self.is_anonymous = False
 
-    def get_id():
+    def get_id(self):
         return self.username
 
 
