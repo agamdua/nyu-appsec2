@@ -39,7 +39,10 @@ def register():
                     'login_form.html', title='Register', form=form, form_title="Register", registration_failure=True,
                 )
 
-            return redirect(url_for('login'))
+            return render_template(
+                'login_form.html', title='Register', form=form,
+                form_title="Register", registration_success=True,
+            )
 
         else:
             return render_template(
