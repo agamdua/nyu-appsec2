@@ -91,8 +91,6 @@ def login():
 def spell_check():
     spell_check_form = SpellCheckForm()
 
-    import ipdb; ipdb.set_trace()
-
     if flask.request.method == 'POST':
         if form.validate_on_submit():
             pass
