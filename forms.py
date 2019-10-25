@@ -18,5 +18,5 @@ class RegisterForm(BaseUserForm):
 
 
 class SpellCheckForm(FlaskForm):
-    inputarea = StringField('inputtext')
+    inputarea = StringField('inputtext', id='inputtext')
     submit = SubmitField('spell check')

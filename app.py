@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 import flask
 
@@ -92,11 +93,21 @@ def spell_check():
     spell_check_form = SpellCheckForm()
 
     if flask.request.method == 'POST':
-        if form.validate_on_submit():
-            pass
+        if spell_check_form.validate_on_submit():
+            input_data = spell_check_form.inputarea.data
+            out = subprocess.run(
+                    ['./a.out', input_data], stdout=subprocess.PIPE)
+            current_user.input_data = input_data
+            current_user.out = out
+            return redirect('spell_check')
 
-
-    login_success = request.args.get('login_success')
-    return render_template(
-        'spell_check.html', title='Spell Check', form=spell_check_form
-    )
+    if flask.request.method == 'GET':
+        input_data = getattr(current_user, 'input_data', None)
+        login_success = request.args.get('login_success')
+        return render_template(
+            'spell_check.html',
+            title='Spell Check',
+            form=spell_check_form,
+            input_data=input_data,
+            login_success=True,
+        )

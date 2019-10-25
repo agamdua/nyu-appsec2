@@ -13,5 +13,13 @@
 			{{ form.submit() }}
 		</p>
 	</form>
+	{% if input_data %}
+	<p id=textout>
+		{{ input_data }}
+	</p>
+	<p id=misspelled>
+		{{ out }}
+	</p>
+	{% endif %}
 {% endblock %}
 
