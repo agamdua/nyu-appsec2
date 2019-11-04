@@ -5,19 +5,32 @@ import flask
 
 from flask import Flask, flash, redirect, render_template, request, url_for
 from flask_login import current_user, LoginManager, login_required, login_user
+from flask_sqlalchemy import SQLAlchemy
 
 from forms import LoginForm, RegisterForm, SpellCheckForm
 from users import User, users, UserDoesNotExist, UniqueConstraintError
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "testing")
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # TODO: remove or restrict to tests!
 app.config["WTF_CSRF_ENABLED"] = False
 
+db = SQLAlchemy(app)
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
+
+
+class UserTable(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)
+    is_authenticated = db.Column(db.Boolean)
+    is_active = db.Column(db.Boolean)
 
 
 @login_manager.user_loader
