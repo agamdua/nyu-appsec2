@@ -132,14 +132,16 @@ def spell_check():
             input_data = spell_check_form.inputarea.data
             out = subprocess.run(["./a.out", input_data], stdout=subprocess.PIPE)
 
-            spell_check = SpellCheck(text_to_check=input_data, result=out, user=current_user)
+            spell_check = SpellCheck(
+                text_to_check=input_data, result=out, user=current_user
+            )
             db.session.add(spell_check)
             db.session.commit()
             return redirect("spell_check")
 
     if flask.request.method == "GET":
         spell_check = SpellCheck.query.filter_by(user_id=current_user.id).first()
-        input_data = getattr(spell_check, 'text_to_check', None)
+        input_data = getattr(spell_check, "text_to_check", None)
 
         login_success = request.args.get("login_success")
         return render_template(
@@ -149,3 +151,16 @@ def spell_check():
             input_data=input_data,
             login_success=True,
         )
+
+
+@app.route("/history")
+@login_required
+def history():
+    spell_check_queries = SpellCheck.query.filter_by(user_id=current_user.id).all()
+
+    # given that we don't have enough that requires pagination, calculated the count in python shouldn't be too big a deal
+    count = len(spell_check_queries)
+
+    return render_template(
+        "spell_check_history.html", queries=spell_check_queries, count=count
+    )

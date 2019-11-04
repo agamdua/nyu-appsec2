@@ -1,0 +1,6 @@
+{% block content %}
+	<p id=numqueries>Total queries: {{ count }} </p>
+	{% for query in queries %}
+	<li><a href="query#{{url_for('history')"> Query #{{ query.id }}</a></li>
+	{% endfor %}
+{% endblock %}
