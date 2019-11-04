@@ -7,30 +7,24 @@ from app import app
 def test_client():
     flask_app = app
     testing_client = flask_app.test_client()
-
     yield testing_client
 
 
-def test_home_page(test_client):
-    response = test_client.get('/')
-    assert response.status_code == 302
-
-
-def test_login_page(test_client):
-    response = test_client.get('/login')
+def test_registration_page(test_client):
+    response = test_client.get('/register')
     assert response.status_code == 200
-    assert b'Login' in response.data
+    assert b'Register' in response.data
     assert b'Username' in response.data
+    assert b'2fa' in response.data
 
 
-def test_login(test_client):
+def test_registration(test_client):
     response = test_client.post(
-        '/login',
+        '/register',
         data=dict(
-            username='test',
+            username='unit_test_registration_user',
             password='test',
         ),
         follow_redirects=True,
     )
-
-    assert b'success on login' in response.data
+    assert b'registration success' in response.data
