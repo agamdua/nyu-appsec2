@@ -27,43 +27,11 @@ app.config["WTF_CSRF_ENABLED"] = False
 
 db = SQLAlchemy(app)
 
+from models import User, SpellCheck
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
-
-
-class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
-    is_authenticated = db.Column(db.Boolean)
-    is_active = db.Column(db.Boolean)
-
-    is_anonymous = False
-
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
-
-    @classmethod
-    def get_by_id(cls, user_id):
-        return cls.query.get(int(user_id))
-
-    def get(self):
-        if self.id is not None:
-            return self.__class__.get_by_id(int(self.id))
-        return self.__class__.query.filter_by(username=self.username)
-
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
-        return self
-
-    def create_session(self):
-        self.is_authenticated = True
-        self.is_active = True
-        self.is_anonymous = False
-
 
 db.create_all()
 test_user = User(username="test", password="test")
@@ -163,12 +131,18 @@ def spell_check():
         if spell_check_form.validate_on_submit():
             input_data = spell_check_form.inputarea.data
             out = subprocess.run(["./a.out", input_data], stdout=subprocess.PIPE)
-            current_user.input_data = input_data
-            current_user.out = out
+
+            spell_check = SpellCheck(text_to_check=input_data, result=out, user=current_user)
+            db.session.add(spell_check)
+            db.session.commit()
             return redirect("spell_check")
 
     if flask.request.method == "GET":
-        input_data = getattr(current_user, "input_data", None)
+        spell_check = SpellCheck.query.filter_by(user_id=current_user.id).first()
+        if spell_check is not None:
+            # send back spell_checks to the tempalte if the autograder needs it
+            pass
+
         login_success = request.args.get("login_success")
         return render_template(
             "spell_check.html",
