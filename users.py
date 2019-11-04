@@ -1,5 +1,10 @@
-class UniqueConstraintError(Exception): pass
-class UserDoesNotExist(Exception): pass
+class UniqueConstraintError(Exception):
+    pass
+
+
+class UserDoesNotExist(Exception):
+    pass
+
 
 class Users(dict):
     def create(self, user):
@@ -24,7 +29,7 @@ class Users(dict):
             self.get(user)
         except UserDoesNotExist:
             pass
-        
+
         return self.create(user)
 
     def _save(self, user):
@@ -33,7 +38,14 @@ class Users(dict):
 
 
 class User:
-    def __init__(self, username, password, is_authenticated=False, is_active=True, is_anonymous=True):
+    def __init__(
+        self,
+        username,
+        password,
+        is_authenticated=False,
+        is_active=True,
+        is_anonymous=True,
+    ):
         self.username = username
         self.password = password
         self.is_authenticated = is_authenticated
@@ -49,6 +61,6 @@ class User:
         return self.username
 
 
-test_user = User('test', 'test')
+test_user = User("test", "test")
 users = Users()
 users.create(test_user)
