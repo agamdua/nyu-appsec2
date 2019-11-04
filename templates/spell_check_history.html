@@ -1,6 +1,12 @@
 {% block content %}
 	<p id=numqueries>Total queries: {{ count }} </p>
+	{% if qid %}
+		<p id={{qid}}>{{ qid }}</p>
+		<p id=username>{{ user.username }}</p>
+		<p id=querytext>{{ query.text_to_check }}</p>
+		<p id=queryresults>{{ query.result }}</p>
+	{% endif %}
 	{% for query in queries %}
-	<li><a href="query#{{url_for('history')"> Query #{{ query.id }}</a></li>
+		<li><a href="/history/{{ query.id }}" id="query{{query.id}}">Query #{{ query.id }}</a></li>
 	{% endfor %}
 {% endblock %}

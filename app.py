@@ -154,13 +154,31 @@ def spell_check():
 
 
 @app.route("/history")
+@app.route("/history/<qid>")
 @login_required
-def history():
+def history(qid=None):
     spell_check_queries = SpellCheck.query.filter_by(user_id=current_user.id).all()
 
     # given that we don't have enough that requires pagination, calculated the count in python shouldn't be too big a deal
     count = len(spell_check_queries)
 
+    # TODO
+    """
+    if current_user.role == 'admin':
+        don't filter by user
+    else definitely add the user filter on the query
+    """
+
+    if qid is not None:
+        query = SpellCheck.query.filter_by(id=qid).first()
+    else:
+        query = None
+
     return render_template(
-        "spell_check_history.html", queries=spell_check_queries, count=count
+        "spell_check_history.html",
+        queries=spell_check_queries,
+        count=count,
+        qid=qid,
+        user=current_user,
+        query=query,
     )
