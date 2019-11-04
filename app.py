@@ -4,11 +4,18 @@ import subprocess
 import flask
 
 from flask import Flask, flash, redirect, render_template, request, url_for
-from flask_login import current_user, LoginManager, login_required, login_user
+from flask_login import (
+    current_user,
+    LoginManager,
+    login_required,
+    login_user,
+    UserMixin,
+)
 from flask_sqlalchemy import SQLAlchemy
 
 from forms import LoginForm, RegisterForm, SpellCheckForm
-from users import User, users, UserDoesNotExist, UniqueConstraintError
+
+# from users import User, users, UserDoesNotExist, UniqueConstraintError
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "testing")
@@ -25,17 +32,47 @@ login_manager.init_app(app)
 login_manager.login_view = "login"
 
 
-class UserTable(db.Model):
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     is_authenticated = db.Column(db.Boolean)
     is_active = db.Column(db.Boolean)
 
+    is_anonymous = False
+
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
+    @classmethod
+    def get_by_id(cls, user_id):
+        return cls.query.get(int(user_id))
+
+    def get(self):
+        if self.id is not None:
+            return self.__class__.get_by_id(int(self.id))
+        return self.__class__.query.filter_by(username=self.username)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        return self
+
+    def create_session(self):
+        self.is_authenticated = True
+        self.is_active = True
+        self.is_anonymous = False
+
+
+db.create_all()
+test_user = User(username="test", password="test")
+test_user.save()
+
 
 @login_manager.user_loader
 def load_user(user_id):
-    return users.get_by_id(user_id)
+    return User.get_by_id(user_id)
 
 
 @app.route("/")
@@ -51,7 +88,7 @@ def register():
         if form.validate_on_submit():
             user = User(form.username.data, form.password.data)
             try:
-                users.create(user)
+                user.save()
             except UniqueConstraintError:
                 return render_template(
                     "login_form.html",
@@ -89,10 +126,8 @@ def login():
 
     if flask.request.method == "POST":
         if form.validate_on_submit():
-            user = User(form.username.data, form.password.data)
-            try:
-                users.get(user)
-            except UserDoesNotExist:
+            user = User.query.filter_by(username=form.username.data).first()
+            if user is None:
                 return render_template(
                     "login_form.html",
                     title="Login",
@@ -101,7 +136,7 @@ def login():
                     login_failure=True,
                 )
             user.create_session()
-            users._save(user)
+            user.save()
             login_user(user)
             return redirect(url_for("spell_check"))
         else:
