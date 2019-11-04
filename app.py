@@ -139,9 +139,7 @@ def spell_check():
 
     if flask.request.method == "GET":
         spell_check = SpellCheck.query.filter_by(user_id=current_user.id).first()
-        if spell_check is not None:
-            # send back spell_checks to the tempalte if the autograder needs it
-            pass
+        input_data = getattr(spell_check, 'text_to_check', None)
 
         login_success = request.args.get("login_success")
         return render_template(
