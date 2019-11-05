@@ -1,5 +1,4 @@
 import os
-import subprocess
 
 import flask
 
@@ -14,8 +13,7 @@ from flask_login import (
 from flask_sqlalchemy import SQLAlchemy
 
 from forms import LoginForm, RegisterForm, SpellCheckForm
-
-# from users import User, users, UserDoesNotExist, UniqueConstraintError
+from utils import run_spell_check
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "testing")
@@ -27,7 +25,7 @@ app.config["WTF_CSRF_ENABLED"] = False
 
 db = SQLAlchemy(app)
 
-from models import User, SpellCheck
+from models import User, SpellCheck, Roles
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -40,8 +38,7 @@ test_user.save()
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.get_by_id(user_id)
-
+    return User.query.filter_by(id=user_id).first()
 
 @app.route("/")
 def home():
@@ -55,6 +52,10 @@ def register():
     if flask.request.method == "POST":
         if form.validate_on_submit():
             user = User(form.username.data, form.password.data)
+
+            # TODO: add additional verfication checks
+            if user.username == 'admin':
+                user.role = Roles.admin
             try:
                 user.save()
             except UniqueConstraintError:
@@ -130,13 +131,12 @@ def spell_check():
     if flask.request.method == "POST":
         if spell_check_form.validate_on_submit():
             input_data = spell_check_form.inputarea.data
-            out = subprocess.run(["./a.out", input_data], stdout=subprocess.PIPE)
+            out = run_spell_check(input_data)
 
             spell_check = SpellCheck(
                 text_to_check=input_data, result=out, user=current_user
             )
-            db.session.add(spell_check)
-            db.session.commit()
+            spell_check.save()
             return redirect("spell_check")
 
     if flask.request.method == "GET":
@@ -170,7 +170,9 @@ def history(qid=None):
     """
 
     if qid is not None:
-        query = SpellCheck.query.filter_by(id=qid).first()
+        query = SpellCheck.query.filter_by(id=qid)
+        if current_user.role != Roles.admin:
+            query = query.filter_by(user_id=current_user.id)
     else:
         query = None
 
