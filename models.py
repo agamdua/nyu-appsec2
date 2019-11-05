@@ -5,7 +5,7 @@ from app import db
 
 class User(UserMixin, db.Model):
 
-    __tablename__ = "user"
+    __tablename__ = "cuser"
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -39,15 +39,10 @@ class User(UserMixin, db.Model):
         self.is_anonymous = False
 
 
-# spell_check_submissions = db.Table('spell_checks',
-#     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
-#     db.Column('spell_check_id', db.Integer, db.ForeignKey('spell_check.id'), primary_key=True)
-# )
-
 
 class SpellCheck(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text_to_check = db.Column(db.Text())
     result = db.Column(db.Text())
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("cuser.id"))
     user = db.relationship("User")
