@@ -1,7 +1,13 @@
+import enum
+
 from flask_login import UserMixin
 
 from app import db
 
+
+class Roles(enum.Enum):
+    admin = 'admin'
+    user = 'user'
 
 class User(UserMixin, db.Model):
 
@@ -12,21 +18,13 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(255), nullable=False)
     is_authenticated = db.Column(db.Boolean)
     is_active = db.Column(db.Boolean)
+    role = db.Column(db.Enum(Roles))
 
     is_anonymous = False
 
     def __init__(self, username, password):
         self.username = username
         self.password = password
-
-    @classmethod
-    def get_by_id(cls, user_id):
-        return cls.query.get(int(user_id))
-
-    def get(self):
-        if self.id is not None:
-            return self.__class__.get_by_id(int(self.id))
-        return self.__class__.query.filter_by(username=self.username)
 
     def save(self):
         db.session.add(self)

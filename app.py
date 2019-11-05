@@ -25,7 +25,7 @@ app.config["WTF_CSRF_ENABLED"] = False
 
 db = SQLAlchemy(app)
 
-from models import User, SpellCheck
+from models import User, SpellCheck, Roles
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -38,8 +38,7 @@ test_user.save()
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.get_by_id(user_id)
-
+    return User.query.filter_by(id=user_id).first()
 
 @app.route("/")
 def home():
@@ -53,6 +52,10 @@ def register():
     if flask.request.method == "POST":
         if form.validate_on_submit():
             user = User(form.username.data, form.password.data)
+
+            # TODO: add additional verfication checks
+            if user.username == 'admin':
+                user.role = Roles.admin
             try:
                 user.save()
             except UniqueConstraintError:
@@ -167,7 +170,9 @@ def history(qid=None):
     """
 
     if qid is not None:
-        query = SpellCheck.query.filter_by(id=qid).first()
+        query = SpellCheck.query.filter_by(id=qid)
+        if current_user.role != Roles.admin:
+            query = query.filter_by(user_id=current_user.id)
     else:
         query = None
 
