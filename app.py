@@ -1,5 +1,4 @@
 import os
-import subprocess
 
 import flask
 
@@ -14,8 +13,7 @@ from flask_login import (
 from flask_sqlalchemy import SQLAlchemy
 
 from forms import LoginForm, RegisterForm, SpellCheckForm
-
-# from users import User, users, UserDoesNotExist, UniqueConstraintError
+from utils import run_spell_check
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "testing")
@@ -130,13 +128,12 @@ def spell_check():
     if flask.request.method == "POST":
         if spell_check_form.validate_on_submit():
             input_data = spell_check_form.inputarea.data
-            out = subprocess.run(["./a.out", input_data], stdout=subprocess.PIPE)
+            out = run_spell_check(input_data)
 
             spell_check = SpellCheck(
                 text_to_check=input_data, result=out, user=current_user
             )
-            db.session.add(spell_check)
-            db.session.commit()
+            spell_check.save()
             return redirect("spell_check")
 
     if flask.request.method == "GET":

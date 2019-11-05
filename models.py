@@ -39,10 +39,14 @@ class User(UserMixin, db.Model):
         self.is_anonymous = False
 
 
-
 class SpellCheck(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text_to_check = db.Column(db.Text())
     result = db.Column(db.Text())
     user_id = db.Column(db.Integer, db.ForeignKey("cuser.id"))
     user = db.relationship("User")
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        return self
