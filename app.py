@@ -27,9 +27,15 @@ app.config["WTF_CSRF_ENABLED"] = False
 
 db = SQLAlchemy(app)
 
+from models import User, SpellCheck
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
+
+db.create_all()
+test_user = User(username="test", password="test")
+test_user.save()
 
 
 class User(UserMixin, db.Model):
@@ -163,12 +169,18 @@ def spell_check():
         if spell_check_form.validate_on_submit():
             input_data = spell_check_form.inputarea.data
             out = subprocess.run(["./a.out", input_data], stdout=subprocess.PIPE)
-            current_user.input_data = input_data
-            current_user.out = out
+
+            spell_check = SpellCheck(
+                text_to_check=input_data, result=out, user=current_user
+            )
+            db.session.add(spell_check)
+            db.session.commit()
             return redirect("spell_check")
 
     if flask.request.method == "GET":
-        input_data = getattr(current_user, "input_data", None)
+        spell_check = SpellCheck.query.filter_by(user_id=current_user.id).first()
+        input_data = getattr(spell_check, "text_to_check", None)
+
         login_success = request.args.get("login_success")
         return render_template(
             "spell_check.html",
@@ -177,3 +189,34 @@ def spell_check():
             input_data=input_data,
             login_success=True,
         )
+
+
+@app.route("/history")
+@app.route("/history/<qid>")
+@login_required
+def history(qid=None):
+    spell_check_queries = SpellCheck.query.filter_by(user_id=current_user.id).all()
+
+    # given that we don't have enough that requires pagination, calculated the count in python shouldn't be too big a deal
+    count = len(spell_check_queries)
+
+    # TODO
+    """
+    if current_user.role == 'admin':
+        don't filter by user
+    else definitely add the user filter on the query
+    """
+
+    if qid is not None:
+        query = SpellCheck.query.filter_by(id=qid).first()
+    else:
+        query = None
+
+    return render_template(
+        "spell_check_history.html",
+        queries=spell_check_queries,
+        count=count,
+        qid=qid,
+        user=current_user,
+        query=query,
+    )
