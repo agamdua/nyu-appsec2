@@ -63,6 +63,9 @@ def create_database_users():
     test_user.save()
 
     admin_user = User(
-        username="admin", password="Administrator@1", two_factor="12345678901"
+        username="admin",
+        password="Administrator@1",
+        two_factor="12345678901",
+        role=Roles.admin,
     )
     admin_user.save()
