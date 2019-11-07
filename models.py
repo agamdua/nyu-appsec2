@@ -60,6 +60,12 @@ class SpellCheck(db.Model):
         return self
 
 
+    def can_be_accessed_by(self, user):
+        if self.user.id == user.id or user.role == Roles.admin:
+            return True
+        return False
+
+
 def create_database_users():
     test_user = User(
         username="test", password="test", two_factor="12345678901", role=Roles.admin
@@ -73,3 +79,10 @@ def create_database_users():
         role=Roles.admin,
     )
     admin_user.save()
+
+    unauth_user = User(
+        username="unauth",
+        password="test",
+        two_factor="12345678901",
+    )
+    unauth_user.save()
