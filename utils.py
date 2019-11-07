@@ -11,5 +11,5 @@ def run_spell_check(data):
     if data is None:
         return
 
-    out = subprocess.run(["./a.out", input_data], stdout=subprocess.PIPE)
+    out = subprocess.run(["./a.out", data], stdout=subprocess.PIPE)
     return out
