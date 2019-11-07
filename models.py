@@ -26,7 +26,7 @@ class User(UserMixin, db.Model):
     def __init__(self, username, password, role=Roles.user):
         self.username = username
         self.password = password
-        self.role=role
+        self.role = role
 
     def save(self):
         db.session.add(self)
