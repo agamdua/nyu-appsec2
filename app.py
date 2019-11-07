@@ -161,9 +161,7 @@ def history(qid=None):
         count = len(spell_check_queries)
 
         if qid is not None:
-            query = SpellCheck.query.filter_by(id=qid).filter_by(
-                user_id=current_user.id
-            )
+            query = SpellCheck.query.filter_by(id=qid).first()
         else:
             query = None
 
@@ -172,6 +170,7 @@ def history(qid=None):
             queries=spell_check_queries,
             count=count,
             qid=qid,
+            searched_user=current_user,
             user=current_user,
             query=query,
             form=user_search_form,
@@ -180,18 +179,21 @@ def history(qid=None):
     if flask.request.method == "POST":
         if not current_user.role == Roles.admin:
             from flask import abort
-
             abort(403)
 
         if user_search_form.validate_on_submit():
             searched_user = User.query.filter_by(
                 username=user_search_form.username.data
             ).first()
+
             searched_user_history = SpellCheck.query.filter_by(user_id=searched_user.id)
+
+
             return render_template(
                 "spell_check_history.html",
                 queries=searched_user_history,
                 count=len(searched_user_history.all()),
+                searched_user=searched_user,
                 qid=qid,
                 user=current_user,
                 query=searched_user_history,
