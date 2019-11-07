@@ -5,8 +5,8 @@ from app import app
 
 @pytest.fixture(scope="module")
 def test_client():
-    flask_app = app
-    testing_client = flask_app.test_client()
+    app.config["WTF_CSRF_ENABLED"] = False
+    testing_client = app.test_client()
 
     yield testing_client
 

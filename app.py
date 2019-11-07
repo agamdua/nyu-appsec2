@@ -21,7 +21,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # TODO: remove or restrict to tests!
-app.config["WTF_CSRF_ENABLED"] = False
+# app.config["WTF_CSRF_ENABLED"] = False
 
 db = SQLAlchemy(app)
 
@@ -154,7 +154,7 @@ def spell_check():
 
 
 @app.route("/history")
-@app.route("/history/<qid>")
+@app.route("/history/query<qid>")
 @login_required
 def history(qid=None):
     spell_check_queries = SpellCheck.query.filter_by(user_id=current_user.id).all()
