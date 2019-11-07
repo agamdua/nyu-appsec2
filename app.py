@@ -179,7 +179,6 @@ def history(qid=None):
     if flask.request.method == "POST":
         if not current_user.role == Roles.admin:
             from flask import abort
-
             abort(403)
 
         if user_search_form.validate_on_submit():

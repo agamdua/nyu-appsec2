@@ -13,9 +13,10 @@ def run_spell_check(data):
         return
 
     tmp_data_file = tempfile.NamedTemporaryFile(delete=False)
-    tmp_data_file.write(data)
+    tmp_data_file.write(data.encode())
+    tmp_data_file.close()
 
     out = subprocess.run(
-        ["./a.out", "wordlist.txt", tmp_data_file.name], stdout=subprocess.PIPE
+        ["./a.out", tmp_data_file.name, "wordlist.txt"], stdout=subprocess.PIPE,
     )
-    return out
+    return out.stdout
