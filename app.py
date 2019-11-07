@@ -17,7 +17,7 @@ from utils import run_spell_check
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "testing")
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
@@ -102,7 +102,7 @@ def login():
                     login_failure=True,
                 )
             user.create_session()
-            user.save()
+            user = user.save()
             login_user(user)
             return redirect(url_for("spell_check"))
         else:

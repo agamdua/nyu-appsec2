@@ -31,7 +31,9 @@ class User(UserMixin, db.Model):
         self.two_factor = two_factor
 
     def save(self):
-        db.session.add(self)
+        existing_user = self.__class__.query.filter_by(username=self.username).first()
+        if existing_user is None:
+            db.session.add(self)
         db.session.commit()
         return self
 
@@ -59,10 +61,15 @@ class SpellCheck(db.Model):
 
 
 def create_database_users():
-    test_user = User(username="test", password="test", role=Roles.admin)
+    test_user = User(
+        username="test", password="test", two_factor="12345678901", role=Roles.admin
+    )
     test_user.save()
 
     admin_user = User(
-        username="admin", password="Administrator@1", two_factor="12345678901"
+        username="admin",
+        password="Administrator@1",
+        two_factor="12345678901",
+        role=Roles.admin,
     )
     admin_user.save()
