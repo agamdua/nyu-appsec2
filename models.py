@@ -6,8 +6,9 @@ from app import db
 
 
 class Roles(enum.Enum):
-    admin = 'admin'
-    user = 'user'
+    admin = "admin"
+    user = "user"
+
 
 class User(UserMixin, db.Model):
 

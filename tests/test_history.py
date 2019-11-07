@@ -18,17 +18,18 @@ def test_history(test_client, mocker):
     )
     assert login_response.status_code == 200
 
-
-    mock_check = mocker.patch('app.run_spell_check')
-    mock_check.return_value = 'stuff'
+    mock_check = mocker.patch("app.run_spell_check")
+    mock_check.return_value = "stuff"
     spell_check_response = test_client.post(
-            "/spell_check", data=dict(inputarea="test data"), follow_redirects=True,
-            )
+        "/spell_check", data=dict(inputarea="test data"), follow_redirects=True,
+    )
     assert spell_check_response.status_code == 200
-    assert b'test data' in spell_check_response.data
+    assert b"test data" in spell_check_response.data
 
-
-    history_response = test_client.get('/history')
+    history_response = test_client.get("/history")
     assert history_response.status_code == 200
-    assert b'<p id=numqueries>1</p>' in history_response.data
-    assert b'<li><a href="/history/query1" id="query1">Query #1</a></li>' in history_response.data
+    assert b"<p id=numqueries>1</p>" in history_response.data
+    assert (
+        b'<li><a href="/history/query1" id="query1">Query #1</a></li>'
+        in history_response.data
+    )
