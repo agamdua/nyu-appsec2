@@ -12,16 +12,13 @@ from flask_login import (
 )
 from flask_sqlalchemy import SQLAlchemy
 
-from forms import LoginForm, RegisterForm, SpellCheckForm
+from forms import LoginForm, RegisterForm, SpellCheckForm, UserSearchForm
 from utils import run_spell_check
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "testing")
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-# TODO: remove or restrict to tests!
-# app.config["WTF_CSRF_ENABLED"] = False
 
 db = SQLAlchemy(app)
 
@@ -32,7 +29,7 @@ login_manager.init_app(app)
 login_manager.login_view = "login"
 
 db.create_all()
-test_user = User(username="test", password="test")
+test_user = User(username="test", password="test", role=Roles.admin)
 test_user.save()
 
 
@@ -154,34 +151,50 @@ def spell_check():
         )
 
 
-@app.route("/history")
+@app.route("/history", methods=["GET", "POST"])
 @app.route("/history/query<qid>")
 @login_required
 def history(qid=None):
-    spell_check_queries = SpellCheck.query.filter_by(user_id=current_user.id).all()
+    user_search_form = UserSearchForm()
 
-    # given that we don't have enough that requires pagination, calculated the count in python shouldn't be too big a deal
-    count = len(spell_check_queries)
+    if flask.request.method == "GET":
+        spell_check_queries = SpellCheck.query.filter_by(user_id=current_user.id).all()
+        count = len(spell_check_queries)
 
-    # TODO
-    """
-    if current_user.role == 'admin':
-        don't filter by user
-    else definitely add the user filter on the query
-    """
+        if qid is not None:
+            query = SpellCheck.query.filter_by(id=qid).filter_by(
+                user_id=current_user.id
+            )
+        else:
+            query = None
 
-    if qid is not None:
-        query = SpellCheck.query.filter_by(id=qid)
-        if current_user.role != Roles.admin:
-            query = query.filter_by(user_id=current_user.id)
-    else:
-        query = None
+        return render_template(
+            "spell_check_history.html",
+            queries=spell_check_queries,
+            count=count,
+            qid=qid,
+            user=current_user,
+            query=query,
+            form=user_search_form,
+        )
 
-    return render_template(
-        "spell_check_history.html",
-        queries=spell_check_queries,
-        count=count,
-        qid=qid,
-        user=current_user,
-        query=query,
-    )
+    if flask.request.method == "POST":
+        if not current_user.role == Roles.admin:
+            from flask import abort
+
+            abort(403)
+
+        if user_search_form.validate_on_submit():
+            searched_user = User.query.filter_by(
+                username=user_search_form.username.data
+            ).first()
+            searched_user_history = SpellCheck.query.filter_by(user_id=searched_user.id)
+            return render_template(
+                "spell_check_history.html",
+                queries=searched_user_history,
+                count=len(searched_user_history.all()),
+                qid=qid,
+                user=current_user,
+                query=searched_user_history,
+                form=user_search_form,
+            )

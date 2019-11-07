@@ -21,3 +21,8 @@ class RegisterForm(BaseUserForm):
 class SpellCheckForm(FlaskForm):
     inputarea = StringField("inputtext", id="inputtext")
     submit = SubmitField("spell check")
+
+
+class UserSearchForm(FlaskForm):
+    username = StringField("Username", id="userquery", validators=[DataRequired()])
+    submit = SubmitField("Search")

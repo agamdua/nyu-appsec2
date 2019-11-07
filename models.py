@@ -23,9 +23,10 @@ class User(UserMixin, db.Model):
 
     is_anonymous = False
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, role=Roles.user):
         self.username = username
         self.password = password
+        self.role = role
 
     def save(self):
         db.session.add(self)
@@ -36,6 +37,10 @@ class User(UserMixin, db.Model):
         self.is_authenticated = True
         self.is_active = True
         self.is_anonymous = False
+
+    @property
+    def is_admin(self):
+        return True if self.role == Roles.admin else False
 
 
 class SpellCheck(db.Model):
