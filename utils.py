@@ -1,4 +1,5 @@
 import subprocess
+import tempfile
 
 
 def run_spell_check(data):
@@ -11,5 +12,10 @@ def run_spell_check(data):
     if data is None:
         return
 
-    out = subprocess.run(["./a.out", data], stdout=subprocess.PIPE)
+    tmp_data_file = tempfile.NamedTemporaryFile(delete=False)
+    tmp_data_file.write(data)
+
+    out = subprocess.run(
+        ["./a.out", "wordlist.txt", tmp_data_file.name], stdout=subprocess.PIPE
+    )
     return out

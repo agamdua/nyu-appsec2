@@ -4,5 +4,11 @@ runserver:
 install:
 	pip install -r requirements.txt
 
-lint:
+format:
 	black .
+
+
+test:
+	rm -f test.db
+	pytest -s
+	rm test.db
