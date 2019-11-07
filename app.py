@@ -40,6 +40,7 @@ test_user.save()
 def load_user(user_id):
     return User.query.filter_by(id=user_id).first()
 
+
 @app.route("/")
 def home():
     return redirect(url_for("login"))
@@ -54,7 +55,7 @@ def register():
             user = User(form.username.data, form.password.data)
 
             # TODO: add additional verfication checks
-            if user.username == 'admin':
+            if user.username == "admin":
                 user.role = Roles.admin
             try:
                 user.save()
