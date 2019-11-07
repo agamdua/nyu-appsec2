@@ -20,13 +20,15 @@ class User(UserMixin, db.Model):
     is_authenticated = db.Column(db.Boolean)
     is_active = db.Column(db.Boolean)
     role = db.Column(db.Enum(Roles))
+    two_factor = db.Column(db.String(80))
 
     is_anonymous = False
 
-    def __init__(self, username, password, role=Roles.user):
+    def __init__(self, username, password, role=Roles.user, two_factor=""):
         self.username = username
         self.password = password
         self.role = role
+        self.two_factor = two_factor
 
     def save(self):
         db.session.add(self)
@@ -54,3 +56,13 @@ class SpellCheck(db.Model):
         db.session.add(self)
         db.session.commit()
         return self
+
+
+def create_database_users():
+    test_user = User(username="test", password="test", role=Roles.admin)
+    test_user.save()
+
+    admin_user = User(
+        username="admin", password="Administrator@1", two_factor="12345678901"
+    )
+    admin_user.save()
