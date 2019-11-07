@@ -154,7 +154,7 @@ def spell_check():
 
 
 @app.route("/history")
-@app.route("/history/<qid>")
+@app.route("/history/query<qid>")
 @login_required
 def history(qid=None):
     spell_check_queries = SpellCheck.query.filter_by(user_id=current_user.id).all()
