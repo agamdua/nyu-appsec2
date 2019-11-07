@@ -21,7 +21,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # TODO: remove or restrict to tests!
-app.config["WTF_CSRF_ENABLED"] = False
+# app.config["WTF_CSRF_ENABLED"] = False
 
 db = SQLAlchemy(app)
 
