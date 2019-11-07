@@ -7,7 +7,6 @@ from app import app
 def test_client():
     app.config["WTF_CSRF_ENABLED"] = False
     testing_client = app.test_client()
-
     yield testing_client
 
 
