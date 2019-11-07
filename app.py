@@ -163,13 +163,6 @@ def history(qid=None):
     # given that we don't have enough that requires pagination, calculated the count in python shouldn't be too big a deal
     count = len(spell_check_queries)
 
-    # TODO
-    """
-    if current_user.role == 'admin':
-        don't filter by user
-    else definitely add the user filter on the query
-    """
-
     if qid is not None:
         query = SpellCheck.query.filter_by(id=qid)
         if current_user.role != Roles.admin:
