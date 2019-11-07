@@ -22,15 +22,14 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
-from models import User, SpellCheck, Roles
+from models import User, SpellCheck, Roles, create_database_users
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
 db.create_all()
-test_user = User(username="test", password="test", role=Roles.admin)
-test_user.save()
+create_database_users()
 
 
 @login_manager.user_loader
