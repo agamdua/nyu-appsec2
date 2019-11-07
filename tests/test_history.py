@@ -19,7 +19,7 @@ def test_history(test_client, mocker):
     assert login_response.status_code == 200
 
 
-    mock_check = mocker.patch('utils.run_spell_check')
+    mock_check = mocker.patch('app.run_spell_check')
     mock_check.return_value = 'stuff'
     spell_check_response = test_client.post(
             "/spell_check", data=dict(inputarea="test data"), follow_redirects=True,
