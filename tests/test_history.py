@@ -28,7 +28,7 @@ def test_history(test_client, mocker):
 
     history_response = test_client.get("/history")
     assert history_response.status_code == 200
-    assert b"<p id=numqueries>1</p>" in history_response.data
+    assert b"<p id=\"numqueries\">1</p>" in history_response.data
     assert (
         b'<li><a href="/history/query1" id="query1">Query #1</a></li>'
         in history_response.data
