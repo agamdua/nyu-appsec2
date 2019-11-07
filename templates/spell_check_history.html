@@ -7,6 +7,6 @@
 		<p id=queryresults>{{ query.result }}</p>
 	{% endif %}
 	{% for query in queries %}
-		<li><a href="/history/query{{ query.id }}" id="query{{query.id}}">Query #{{ query.id }}</a></li>
+		<a href="/history/query{{ query.id }}" id="query{{query.id}}">Query #{{ query.id }}</a>
 	{% endfor %}
 {% endblock %}
