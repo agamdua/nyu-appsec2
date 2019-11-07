@@ -16,8 +16,6 @@ def run_spell_check(data):
     tmp_data_file.write(data.encode())
     tmp_data_file.close()
 
-    import ipdb; ipdb.set_trace()
-
     out = subprocess.run(
         ["./a.out", tmp_data_file.name, "wordlist.txt"], stdout=subprocess.PIPE,
     )
