@@ -2,7 +2,7 @@ import os
 
 import flask
 
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import Flask, flash, redirect, render_template, request, url_for, abort
 from flask_login import (
     current_user,
     LoginManager,
@@ -162,6 +162,8 @@ def history(qid=None):
 
         if qid is not None:
             query = SpellCheck.query.filter_by(id=qid).first()
+            if not query.can_be_accessed_by(current_user):
+                abort(403)
         else:
             query = None
 
@@ -178,7 +180,6 @@ def history(qid=None):
 
     if flask.request.method == "POST":
         if not current_user.role == Roles.admin:
-            from flask import abort
             abort(403)
 
         if user_search_form.validate_on_submit():
