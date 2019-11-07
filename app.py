@@ -179,6 +179,7 @@ def history(qid=None):
     if flask.request.method == "POST":
         if not current_user.role == Roles.admin:
             from flask import abort
+
             abort(403)
 
         if user_search_form.validate_on_submit():
@@ -187,7 +188,6 @@ def history(qid=None):
             ).first()
 
             searched_user_history = SpellCheck.query.filter_by(user_id=searched_user.id)
-
 
             return render_template(
                 "spell_check_history.html",
