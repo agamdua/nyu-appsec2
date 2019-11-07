@@ -24,7 +24,9 @@ def test_login_page(test_client):
 
 def test_login(test_client):
     response = test_client.post(
-        "/login", data=dict(username="test", password="test",), follow_redirects=True,
+        "/login",
+        data=dict(username="test", password="test", two_factor="12345678901"),
+        follow_redirects=True,
     )
 
     assert b"success on login" in response.data
