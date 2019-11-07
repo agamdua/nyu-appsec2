@@ -126,3 +126,7 @@ dmypy.json
 
 # editor
 *.swp
+
+
+test.db
+.vagrant/
