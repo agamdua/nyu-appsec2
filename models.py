@@ -1,6 +1,7 @@
 import enum
 
 from flask_login import UserMixin
+from werkzeug.security import generate_password_hash
 
 from app import db
 
@@ -29,6 +30,10 @@ class User(UserMixin, db.Model):
         self.password = password
         self.role = role
         self.two_factor = two_factor
+
+    def hash_and_save(self):
+        self.password = generate_password_hash(self.password)
+        return self.save()
 
     def save(self):
         existing_user = self.__class__.query.filter_by(username=self.username).first()
@@ -70,7 +75,7 @@ def create_database_users():
     test_user = User(
         username="test", password="test", two_factor="12345678901", role=Roles.admin
     )
-    test_user.save()
+    test_user.hash_and_save()
 
     admin_user = User(
         username="admin",
@@ -78,11 +83,11 @@ def create_database_users():
         two_factor="12345678901",
         role=Roles.admin,
     )
-    admin_user.save()
+    admin_user.hash_and_save()
 
     unauth_user = User(
         username="unauth",
         password="test",
         two_factor="12345678901",
     )
-    unauth_user.save()
+    unauth_user.hash_and_save()

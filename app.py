@@ -11,6 +11,7 @@ from flask_login import (
     UserMixin,
 )
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import check_password_hash
 
 from forms import LoginForm, RegisterForm, SpellCheckForm, UserSearchForm
 from utils import run_spell_check
@@ -101,6 +102,10 @@ def login():
                     form_title="Login",
                     login_failure=True,
                 )
+
+            if not check_password_hash(user.password, form.password.data):
+                abort(403)
+
             user.create_session()
             user = user.save()
             login_user(user)
