@@ -1,3 +1,4 @@
+import datetime
 import enum
 
 from flask_login import UserMixin
@@ -68,6 +69,20 @@ class SpellCheck(db.Model):
         if self.user.id == user.id or user.role == Roles.admin:
             return True
         return False
+
+
+class UserActivity(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    activity_time = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    activity_name = db.Column(db.String(80))
+
+    user_id = db.Column(db.Integer, db.ForeignKey("cuser.id"))
+    user = db.relationship("User")
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        return self
 
 
 def create_database_users():
