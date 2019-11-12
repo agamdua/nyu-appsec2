@@ -64,7 +64,6 @@ class SpellCheck(db.Model):
         db.session.commit()
         return self
 
-
     def can_be_accessed_by(self, user):
         if self.user.id == user.id or user.role == Roles.admin:
             return True
@@ -85,9 +84,5 @@ def create_database_users():
     )
     admin_user.hash_and_save()
 
-    unauth_user = User(
-        username="unauth",
-        password="test",
-        two_factor="12345678901",
-    )
+    unauth_user = User(username="unauth", password="test", two_factor="12345678901",)
     unauth_user.hash_and_save()
