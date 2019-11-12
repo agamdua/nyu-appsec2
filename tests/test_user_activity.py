@@ -29,7 +29,6 @@ def test_login_activity(test_client):
     assert b"login time:" in user_activity_response.data
 
 
-
 def test_logout_activity(test_client):
     login_response = test_client.post(
         "/login",
@@ -38,7 +37,7 @@ def test_logout_activity(test_client):
     )
     assert login_response.status_code == 200
 
-    logout_response = test_client.get('/logout')
+    logout_response = test_client.get("/logout")
     logout_response.status_code == 302
 
     login_response = test_client.post(

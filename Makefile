@@ -12,6 +12,7 @@ dev_install: install
 
 format:
 	black .
+	black tests/
 
 
 test:

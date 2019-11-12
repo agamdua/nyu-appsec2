@@ -241,11 +241,12 @@ def login_history():
             form=user_search_form,
         )
 
+
 @app.route("/logout")
 @login_required
 def logout():
     user_id = current_user.id
     logout_user()
-    user_activity = UserActivity(activity_name='logout', user_id=user_id)
+    user_activity = UserActivity(activity_name="logout", user_id=user_id)
     user_activity.save()
     return redirect(url_for("login"))
