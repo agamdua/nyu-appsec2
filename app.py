@@ -23,7 +23,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
-from models import User, SpellCheck, Roles, create_database_users
+from models import User, SpellCheck, Roles, UserActivity, create_database_users
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -109,6 +109,8 @@ def login():
             user.create_session()
             user = user.save()
             login_user(user)
+            user_activity = UserActivity(activity_name='login', user=user)
+            user_activity.save()
             return redirect(url_for("spell_check"))
         else:
             return render_template(
@@ -204,3 +206,35 @@ def history(qid=None):
                 query=searched_user_history,
                 form=user_search_form,
             )
+
+
+@app.route('/login_history', methods=["GET", "POST"])
+@login_required
+def login_history():
+    user_search_form = UserSearchForm()
+
+    if not current_user.role == Roles.admin:
+        abort(403)
+
+    if flask.request.method == 'GET':
+        return render_template(
+            "login_history.html",
+            searched_user=current_user,
+            user=current_user,
+            form=user_search_form,
+        )
+         
+
+    if flask.request.method == "POST":
+        if user_search_form.validate_on_submit():
+            searched_user = User.query.filter_by(
+                username=user_search_form.username.data
+            ).first()
+            searched_user_history = UserActivity.query.filter_by(user_id=searched_user.id).all()
+        return render_template(
+            "login_history.html",
+            searched_user=current_user,
+            user=current_user,
+            queries=searched_user_history,
+            form=user_search_form,
+        )
