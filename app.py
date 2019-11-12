@@ -7,6 +7,7 @@ from flask_login import (
     current_user,
     LoginManager,
     login_required,
+    logout_user,
     login_user,
     UserMixin,
 )
@@ -239,3 +240,12 @@ def login_history():
             queries=searched_user_history,
             form=user_search_form,
         )
+
+@app.route("/logout")
+@login_required
+def logout():
+    user_id = current_user.id
+    logout_user()
+    user_activity = UserActivity(activity_name='logout', user_id=user_id)
+    user_activity.save()
+    return redirect(url_for("login"))
