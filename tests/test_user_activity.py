@@ -14,7 +14,9 @@ def test_client():
 
 def test_login_activity(test_client):
     login_response = test_client.post(
-        "/login", data=dict(username="admin", password="Administrator@1",), follow_redirects=True,
+        "/login",
+        data=dict(username="admin", password="Administrator@1",),
+        follow_redirects=True,
     )
     assert login_response.status_code == 200
 
@@ -23,5 +25,5 @@ def test_login_activity(test_client):
     )
 
     assert user_activity_response.status_code == 200
-    assert b"id=\"login" in user_activity_response.data
+    assert b'id="login' in user_activity_response.data
     assert b"login time:" in user_activity_response.data

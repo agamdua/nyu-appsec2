@@ -84,6 +84,7 @@ class UserActivity(db.Model):
         db.session.commit()
         return self
 
+
 def create_database_users():
     test_user = User(
         username="test", password="test", two_factor="12345678901", role=Roles.admin
