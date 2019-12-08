@@ -11,4 +11,6 @@ RUN apt-get update
 RUN apt-get install -y python3-pip python3-dev 
 RUN make install
 
-CMD make prod
+ADD . /appsec
+
+CMD make runserver
