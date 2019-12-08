@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spell-check-api
+  labels:
+    app: spell-check-api
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: spell-check-api
+  template:
+    metadata:
+      labels:
+        app: spell-check-api
+    spec:
+      containers:
+      - name: flask
+        image: spell-checker
+        imagePullPolicy: Never
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        env:
+        - name: LANG
+          value: C.UTF-8
+        - name: LC_ALL
+          value: C.UTF-8
+        ports:
+        - containerPort: 5000
