@@ -5,7 +5,7 @@ metadata:
   labels:
     app: spell-check-api
 spec:
-  replicas: 2
+  replicas: 4
   selector:
     matchLabels:
       app: spell-check-api
@@ -18,6 +18,10 @@ spec:
       - name: flask
         image: spell-checker
         imagePullPolicy: Never
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
         env:
         - name: LANG
           value: C.UTF-8
