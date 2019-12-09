@@ -18,7 +18,7 @@ format:
 
 test:
 	rm -f test.db
-	pytest -s
+	SPELL_CHECK_ENV=CI pytest -s
 	rm test.db
 
 build:
@@ -27,3 +27,9 @@ build:
 k8s:
 	kubectl apply -f k8s/deployment.yaml
 	kubectl apply -f k8s/service.yaml
+
+
+ksecrets:
+	# this is obviously not a production thing
+	# it is for an assignment
+	kubectl create secret generic admin --from-file=k8s/secrets/admin_pw --from-file=k8s/secrets/admin_two_factor

@@ -1,5 +1,6 @@
 import datetime
 import enum
+import os
 
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash
@@ -85,16 +86,23 @@ class UserActivity(db.Model):
         return self
 
 
-def create_database_users():
+def create_database_users(env=None):
     test_user = User(
         username="test", password="test", two_factor="12345678901", role=Roles.admin
     )
     test_user.hash_and_save()
 
+    if env == "CI":
+        admin_password = "Administrator@1"
+        admin_two_factor = 12345678901
+    else:
+        admin_password = os.environ["admin_pw"]
+        admin_two_factor = os.environ["admin_two_factor"]
+
     admin_user = User(
         username="admin",
-        password="Administrator@1",
-        two_factor="12345678901",
+        password=admin_password,
+        two_factor=admin_two_factor,
         role=Roles.admin,
     )
     admin_user.hash_and_save()

@@ -22,6 +22,7 @@ app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "testing")
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+
 db = SQLAlchemy(app)
 
 from models import User, SpellCheck, Roles, UserActivity, create_database_users
@@ -31,7 +32,8 @@ login_manager.init_app(app)
 login_manager.login_view = "login"
 
 db.create_all()
-create_database_users()
+spell_check_env = os.environ.get("SPELL_CHECK_ENV")
+create_database_users(env=spell_check_env)
 
 
 @login_manager.user_loader

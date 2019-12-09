@@ -27,5 +27,15 @@ spec:
           value: C.UTF-8
         - name: LC_ALL
           value: C.UTF-8
+        - name: admin_pw
+          valueFrom:
+            secretKeyRef:
+              name: admin
+              key: admin_pw
+        - name: admin_two_factor
+          valueFrom:
+            secretKeyRef:
+              name: admin
+              key: admin_two_factor
         ports:
         - containerPort: 5000
