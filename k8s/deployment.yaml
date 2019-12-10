@@ -38,4 +38,4 @@ spec:
               name: admin
               key: admin_two_factor
         ports:
-        - containerPort: 5000
+        - containerPort: 8080

@@ -2,7 +2,7 @@ FROM ubuntu:xenial
 
 WORKDIR /appsec
 
-EXPOSE 5000 5000
+EXPOSE 8080 8080
 
 COPY requirements.txt .
 COPY Makefile .

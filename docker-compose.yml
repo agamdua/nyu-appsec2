@@ -3,9 +3,10 @@ services:
   web:
     build: .
     ports:
-      - "5000:5000"
+      - "8080:8080"
     environment:
       - LANG=C.UTF-8
       - LC_ALL=C.UTF-8
+      - SPELL_CHECK_ENV=dcompose
     volumes:
       - .:/appsec
