@@ -92,7 +92,12 @@ def create_database_users(env=None):
     )
     test_user.hash_and_save()
 
-    if env == "CI":
+    # If we are running CI or docker-compose we want to
+    # set these variables here, since the secrets are only
+    # available in kubernetes
+    # In a real world scenario, different users would have been
+    # provisioned
+    if env in ["CI", "dcompose"]:
         admin_password = "Administrator@1"
         admin_two_factor = 12345678901
     else:

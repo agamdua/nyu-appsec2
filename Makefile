@@ -1,10 +1,10 @@
 .PHONY: k8s
 
 runserver:
-	FLASK_ENV=development flask run --host 0.0.0.0
+	FLASK_ENV=development flask run --host 0.0.0.0 --port 8080
 
 prod:
-	flask run --host 0.0.0.0
+	flask run --host 0.0.0.0 --port 8080
 
 install:
 	pip3 install -r requirements.txt
